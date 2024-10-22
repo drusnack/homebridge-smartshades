@@ -118,27 +118,29 @@ var setupShadeServices = function (that, services)
 	targetPosition
 		.on('set', function(value, callback, context) {
 			switch(value) {
-				case 0: // Close the Shade!
+				case 0: // Close the Shade
 					send(that.config.code + "-dn!" + (that.config.motorType ? that.config.motorType : "bf") )
 					setTimeout( function(){
 						targetPosition.updateValue(50);
 						currentPosition.updateValue(50)
 					}, 25000);
 					break;
-				case 24:
-				case 25:
-				case 26: // Move Shade to Favorite position!
-					send(that.config.code + "-gp" + (that.config.motorType ? that.config.motorType : "bf"))
+				case 1 ... 25: // Move Shade to Favorite position
+					send(that.config.code + "-gp!" + (that.config.motorType ? that.config.motorType : "bf"))
 					setTimeout( function(){
 						targetPosition.updateValue(50);
 						currentPosition.updateValue(50)
 					}, 25000);
-					break					
-					
+					break;					
+				case 26 ... 99: // Stop the Shade
+					send(that.config.code + "-sp!" + (that.config.motorType ? that.config.motorType : "bf"))
+					setTimeout( function(){
+						targetPosition.updateValue(50);
+						currentPosition.updateValue(50)
+					}, 25000);
+					break;	
 				case 100: // Open the shade
 					send(that.config.code + "-up!" + (that.config.motorType ? that.config.motorType : "bf"))
-
-					// NEO controller doesn't detect actual position, reset shade after 20 seconds to show the user the shade is at half-position - i.e., neither up or down!
 					setTimeout( function(){
 						targetPosition.updateValue(50);
 						currentPosition.updateValue(50)
@@ -146,7 +148,6 @@ var setupShadeServices = function (that, services)
 					break;
 				default:
 					// Do nothing if any ohter value is selected!
-					console.log("*Debug* - You must slide window covering all the way up or down or to 25% (favorite position) for anything to happen!");
 					break;
 			}
 			callback(null);
